@@ -1,4 +1,5 @@
 const User = require("../models/usermodel");
+const Post = require('../models/postmodel');
 const mongoose = require("mongoose");
 //get a singleuser
 const getSingleUser = async(req, res) => {
@@ -57,25 +58,45 @@ const updateAddOrRemoveFriend = async(req, res) => {
 };
 //search user
 const searchUser = async(req, res) => {
-    try {
-        const { searchuser } = req.params;
-        const data = searchuser.split(" ");
-        const x1 = data[0];
-        const user = await User.find({
-            firstname: { $regex: x1, $options: "i" }
-        })
+        try {
+            const { searchuser } = req.params;
+            const data = searchuser.split(" ");
+            const x1 = data[0];
+            const user = await User.find({
+                firstname: { $regex: x1, $options: "i" }
+            })
 
-        if (user.length > 0 || data.length === 1) {
-            res.status(200).json(user);
-        } else if (data.length > 1) {
-            const x2 = data[1];
-            const user2 = await User.find({ lastname: { $regex: x2, $options: "i" } });
+            if (user.length > 0 || data.length === 1) {
+                res.status(200).json(user);
+            } else if (data.length > 1) {
+                const x2 = data[1];
+                const user2 = await User.find({ lastname: { $regex: x2, $options: "i" } });
 
-            res.status(200).json(user2);
+                res.status(200).json(user2);
+            }
+        } catch (error) {
+
+            res.status(404).json({ message: error.message });
         }
+    }
+    //user profile update
+const updateProfile = async(req, res) => {
+    try {
+        const { id } = req.params;
+        const { url } = req.body;
+        const user = await User.findByIdAndUpdate(id, { picturePath: url }, {
+            new: true
+        });
+        const post = await Post.updateMany({
+            userid: id
+        }, {
+            $set: {
+                userPicturePath: url
+            }
+        });
+        res.status(200).json(user);
     } catch (error) {
-
         res.status(404).json({ message: error.message });
     }
 }
-module.exports = { getSingleUser, getUserFriends, updateAddOrRemoveFriend, searchUser };
+module.exports = { getSingleUser, getUserFriends, updateAddOrRemoveFriend, searchUser, updateProfile };
