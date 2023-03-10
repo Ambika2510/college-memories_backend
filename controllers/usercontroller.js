@@ -59,12 +59,20 @@ const updateAddOrRemoveFriend = async(req, res) => {
 const searchUser = async(req, res) => {
     try {
         const { searchuser } = req.params;
-        const dat = "Ambika "
-
+        const data = searchuser.split(" ");
+        const x1 = data[0];
         const user = await User.find({
-            firstname: { $regex: searchuser, $options: "i" }
+            firstname: { $regex: x1, $options: "i" }
         })
-        res.status(200).json(user);
+
+        if (user.length > 0 || data.length === 1) {
+            res.status(200).json(user);
+        } else if (data.length > 1) {
+            const x2 = data[1];
+            const user2 = await User.find({ lastname: { $regex: x2, $options: "i" } });
+
+            res.status(200).json(user2);
+        }
     } catch (error) {
 
         res.status(404).json({ message: error.message });
