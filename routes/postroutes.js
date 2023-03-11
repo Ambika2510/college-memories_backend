@@ -10,7 +10,7 @@ const {
     pushComment
 } = require('../controllers/postcontroller')
     //middleware
-    // router.use(Authorization)
+router.use(Authorization)
     //routes
 router.post('/create', createPost)
 router.get('/getallpost', getAllPosts)
