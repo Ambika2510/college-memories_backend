@@ -1,4 +1,5 @@
 const express = require('express')
+const Authorization = require('../middleware/Authorization')
 const {
     signupUser,
     loginUser,
@@ -8,5 +9,5 @@ const {
 const router = express.Router()
 router.post("/signup", signupUser);
 router.post("/login", loginUser);
-router.post("/updatepassword", updatePassword)
+router.post("/updatepassword", Authorization, updatePassword)
 module.exports = router
