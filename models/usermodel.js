@@ -95,4 +95,33 @@ userSchema.statics.login = async function(email, password) {
     }
     return user;
 };
+//update password
+//static updatePassword method
+userSchema.statics.updatePassword = async function(userid, oldpassword, newpassword) {
+    if (!oldpassword || !newpassword) {
+        throw Error('All fields must be filled')
+    }
+    const user = await this.findById(userid);
+    if (!user) {
+        throw Error("First you have to login");
+    }
+
+    const match = await bcrypt.compare(oldpassword, user.password);
+    if (!match) {
+        throw Error("Incorrect Old Password");
+    }
+    if (!validator.isStrongPassword(newpassword)) {
+        throw Error('New Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character')
+    }
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(newpassword, salt)
+    const pass = await this.findByIdAndUpdate(userid, {
+        password: hash
+    }, {
+        new: true
+    })
+
+
+    return pass
+}
 module.exports = mongoose.model("bloguser", userSchema);
