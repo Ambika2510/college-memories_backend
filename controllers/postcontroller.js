@@ -2,7 +2,7 @@ const Post = require('../models/postmodel');
 const User = require('../models/usermodel');
 
 const mongoose = require('mongoose');
-const { findById } = require('../models/postmodel');
+// const { findById } = require('../models/postmodel');
 //create a post
 const createPost = async(req, res) => {
         try {
